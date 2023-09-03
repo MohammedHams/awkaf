@@ -33,27 +33,31 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
         ]);
 
         $currencies = Config::get('currencies');
 
-        foreach ($currencies as $currencyName => $currencyCode) {
-            for ($i = 0; $i < 3; $i++) {
+        foreach ($currencies as $currencyName => $currencyData) {
+            $currencyCode = $currencyData['code'];
+            $currencyName = $currencyData['name'];
+
+
                 $accountNumber = str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
                 $user->accounts()->create([
                     'number' => $accountNumber . '-' . $currencyCode,
                     'currency' => $currencyCode,
                 ]);
-            }
+
         }
+
 
         event(new Registered($user));
 

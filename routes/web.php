@@ -19,12 +19,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::middleware(['auth'])->prefix('users')->group(function () {
+    // Routes that require authentication
+
+    // Example: Dashboard route
     Route::get('/dashboard', [IndexController::class, 'dashboard'])->name('dashboard');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [IndexController::class, 'index'])->name('dashboard');
+
+    Route::get('/account/transactions/{accountId}', [IndexController::class, 'show'])->name('account.transactions');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

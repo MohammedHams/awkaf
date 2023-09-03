@@ -209,6 +209,8 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
+        'currencies' => App\Config\Currencies::class,
+
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
